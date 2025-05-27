@@ -71,6 +71,7 @@ graph TD
 7. 
 8. **HTTP статуси:**
     - 200 OK
+    - 201 Created
     - 404 Not Found
     - 422 Validation Error
     - 403 Forbidden
