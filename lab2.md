@@ -91,6 +91,13 @@ graph TD
             ]
         }
         ```
+        **Помилки:**
+
+        - **400 Bad Request** — неправильний формат запиту query params.
+        - **401 Unauthorized** — користувач не автентифікований.
+        - **403 Forbidden** — недостатньо прав для виконання дії.
+        - **404 Not Found** — ресурс не знайдено.
+        - **500 Internal Server Error** — внутрішня помилка сервера.
 
     - **HTTP POST**  
     Створення нового ресурсу. Дані передаються у тілі запиту (JSON).
@@ -103,9 +110,9 @@ graph TD
 
         ```json
         {
-            "name": "Alice Ivanova",
-            "email": "alice@example.com",
-            "password": "securePass123"
+            "name": "Петро Моставчук",
+            "email": "petro@gmail.com",
+            "password": "password123"
         }
         ```
 
@@ -113,11 +120,19 @@ graph TD
         ```json
         {
             "id": 101,
-            "name": "Alice Ivanova",
-            "email": "alice@example.com",
+            "name": "Петро Моставчук",
+            "email": "petro@gmail.com",
             "createdAt": "2025-06-02T13:00:00Z"
         }
         ```
+        **Помилки:**
+        - **400 Bad Request** — неправильний формат запиту (наприклад, невалідний JSON).
+        - **401 Unauthorized** — користувач не автентифікований.
+        - **403 Forbidden** — недостатньо прав для виконання дії.
+        - **404 Not Found** — ресурс не знайдено.
+        - **409 Conflict** — ресурс уже існує (наприклад, email вже використовується).
+        - **422 Validation Error** — валідація не пройдена (некоректні поля).
+        - **500 Internal Server Error** — внутрішня помилка сервера.
 
     
 8. **HTTP статуси:**
