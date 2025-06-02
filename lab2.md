@@ -68,7 +68,59 @@ graph TD
     - POST
     - PUT
     - DELETE
-7. 
+7. **Формати запитів та відповідей**
+7. **Формати запитів та відповідей**
+
+    - **HTTP GET**  
+    Отримання ресурсу або списку ресурсів. Дані передаються через query-параметри.
+            **Приклад запиту:**
+
+            GET /users?limit=10&offset=0&sort=name:asc
+
+        **Приклад відповіді:**
+        ```json
+        {
+            "total": 100,
+            "limit": 10,
+            "offset": 0,
+            "data": [
+            {
+                "id": 1,
+                "name": "Ivan Franko",
+                "email": "franko@gmail.com"
+            }
+            ]
+        }
+        ```
+
+    - **HTTP POST**  
+    Створення нового ресурсу. Дані передаються у тілі запиту (JSON).
+
+        **Приклад запиту:**
+        ```
+        POST /users
+        Content-Type: application/json
+        ```
+
+        ```json
+        {
+            "name": "Alice Ivanova",
+            "email": "alice@example.com",
+            "password": "securePass123"
+        }
+        ```
+
+        **Приклад відповіді:**
+        ```json
+        {
+            "id": 101,
+            "name": "Alice Ivanova",
+            "email": "alice@example.com",
+            "createdAt": "2025-06-02T13:00:00Z"
+        }
+        ```
+
+    
 8. **HTTP статуси:**
     - 200 OK
     - 201 Created
