@@ -12,17 +12,17 @@
 
 #### a. Визначити які сервіси між собою спілкуються синхронно.
 
-- Frontend <-> AuthService – логін, реєстрація користувача
-- Frontend <-> VacationService – створення/перегляд заявок на відпустку
-- Frontend <-> UserService – отримання/оновлення даних про користувача
-- Manager <-> VacationService – затвердження або відхилення запиту
-- Admin <-> UserService – додавання/видалення користувачів, зміна ролей
+- Frontend &harr; AuthService – логін, реєстрація користувача
+- Frontend &harr; VacationService – створення/перегляд заявок на відпустку
+- Frontend &harr; UserService – отримання/оновлення даних про користувача
+- Manager &harr; VacationService – затвердження або відхилення запиту
+- Admin &harr; UserService – додавання/видалення користувачів, зміна ролей
 
 #### b. Визначити які сервіси між собою спілкуються асинхронно, за допомогою RabbitMQ
 
-- VacationService -> NotificationService – надсилання повідомлень після зміни статусу заявки
-- AuthService -> AuditService – логування авторизаційних подій
-- VacationService -> AnalyticsService – надсилання подій для аналітики
+- VacationService &rarr; NotificationService – надсилання повідомлень після зміни статусу заявки
+- AuthService &rarr; AuditService – логування авторизаційних подій
+- VacationService &rarr; AnalyticsService – надсилання подій для аналітики
 
 ### 2. Робота з даними.
 
