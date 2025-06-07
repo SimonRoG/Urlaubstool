@@ -10,7 +10,7 @@ class User(BaseModel):
 
 class Request(BaseModel):
     id: int
-    id: int
+    user_id: int
     status: str
     date_begin: str
     date_end: str
