@@ -1,0 +1,33 @@
+<div id="vacationForm">
+    <h2>Vacation</h2>
+    <form action="/submit-vacation" method="post">
+        <label for="date_begin">from</label>
+        <br>
+        <input type="date" id="date_begin" name="date_begin" required>
+        <br>
+        <label for="date_end">to</label>
+        <br>
+        <input type="date" id="date_end" name="date_end" required>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<div id="vacationRequests">
+    <h2>Vacation requests</h2>
+
+    {% if not urlaub_requests %}
+    <p>No vacation requests yet</p>
+    {% endif %}
+
+    {% for urlaub_request in urlaub_requests %}
+
+    <div>
+        {{ urlaub_request.date_begin }} to {{ urlaub_request.date_end }}
+        {% if urlaub_request.status %}
+        - Status: {{ urlaub_request.status }}
+        {% endif %}
+    </div>
+
+    {% endfor %}
+</div>

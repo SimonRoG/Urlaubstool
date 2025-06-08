@@ -39,7 +39,10 @@ def read_root(request: Request, id: int = None):
                 break
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse("index.html", {"request": request, "user": user})
+    
+    user_urlaub_requests = [req for req in urlaub_requests if req.user_id == user.id]
+    
+    return templates.TemplateResponse("index.html", {"request": request, "user": user, "user_urlaub_requests": user_urlaub_requests})
 
 @app.get("/login")
 def login_form(request: Request):

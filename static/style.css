@@ -1,0 +1,22 @@
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    box-sizing: border-box;
+    scroll-margin-top: 80px;
+    scroll-behavior: smooth;
+}
+
+#menuBar {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15%;
+
+    #logo,
+    #profile {
+        height: 40px;
+    }
+}

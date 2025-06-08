@@ -3,10 +3,15 @@
 
 <head>
     <title>Urlaubstool</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
+    {% include "menu.html" %}
+
     <p>Welcome, {{ user.name }}</p>
+
+    {% include "employee.html" %}
 </body>
 
 </html>
