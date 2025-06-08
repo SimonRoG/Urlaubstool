@@ -11,7 +11,12 @@
 
     <p>Welcome, {{ user.name }}</p>
 
+    {% if user.role == "manager" %}
+    {% include "manager.html" %}
+    {% else %}
     {% include "employee.html" %}
+    {% endif %}
+
 </body>
 
 </html>

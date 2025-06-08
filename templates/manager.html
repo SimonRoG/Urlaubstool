@@ -1,0 +1,18 @@
+<div id="vacationRequests">
+    {% if not user_urlaub_requests %}
+    <p>No vacation requests yet</p>
+    {% endif %}
+
+    {% for urlaub_request in user_urlaub_requests %}
+
+    <div>
+        {% set userreq = users | selectattr('id', 'equalto', urlaub_request.user_id) | first %}
+        {{ userreq.email }} - 
+        {{ urlaub_request.date_begin }} to {{ urlaub_request.date_end }}
+        - Status: {{ urlaub_request.status }}
+        <button>&check;</button>
+        <button>&cross;</button>
+    </div>
+
+    {% endfor %}
+</div>

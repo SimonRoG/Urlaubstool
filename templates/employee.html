@@ -16,17 +16,15 @@
 <div id="vacationRequests">
     <h2>Vacation requests</h2>
 
-    {% if not urlaub_requests %}
+    {% if not user_urlaub_requests %}
     <p>No vacation requests yet</p>
     {% endif %}
 
-    {% for urlaub_request in urlaub_requests %}
+    {% for urlaub_request in user_urlaub_requests %}
 
     <div>
         {{ urlaub_request.date_begin }} to {{ urlaub_request.date_end }}
-        {% if urlaub_request.status %}
         - Status: {{ urlaub_request.status }}
-        {% endif %}
     </div>
 
     {% endfor %}
