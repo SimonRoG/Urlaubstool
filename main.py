@@ -1,9 +1,24 @@
-from fastapi import FastAPI, HTTPException, Request, Form
+from fastapi import FastAPI, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from datetime import date
+from users_db import (
+    create_user,
+    read_user,
+    update_user,
+    delete_user,
+    read_users,
+    read_user_by_email,
+)
+from vacations_db import (
+    create_request,
+    read_request,
+    update_request,
+    delete_request,
+    read_requests,
+)
 
 app = FastAPI()
 
@@ -29,34 +44,21 @@ class UrlaubRequest(BaseModel):
     date_created: date
 
 
-users: User = []
-
-urlaub_requests: UrlaubRequest = []
-
-
 @app.get("/")
 def read_root(request: Request, id: int = None):
-    user = None
-    if id is not None:
-        for u in users:
-            if u.id == id:
-                user = u
-                break
+    user = read_user(id)
     if not user:
         return RedirectResponse(url="/login")
 
-    if user.role == "manager":
-        user_urlaub_requests = urlaub_requests
-    else:
-        user_urlaub_requests = [
-            req for req in urlaub_requests if req.user_id == user.id
-        ]
+    user_urlaub_requests = (
+        read_requests(user.id) if user.role != "manager" else read_requests()
+    )
 
     return templates.TemplateResponse(
         "index.html",
         {
             "request": request,
-            "users": users,
+            "users": read_users(),
             "user": user,
             "user_urlaub_requests": user_urlaub_requests,
         },
@@ -70,103 +72,60 @@ def login_form(request: Request):
 
 @app.post("/login")
 def login(request: Request, email: str = Form(...), password: str = Form(...)):
-    for user in users:
-        if user.email == email and user.password == password:
-            response = RedirectResponse(url=f"/?id={user.id}", status_code=302)
-            return response
+    user = read_user_by_email(email)
+    if user and user.password == password:
+        response = RedirectResponse(url=f"/?id={user.id}", status_code=302)
+        return response
     return templates.TemplateResponse(
         "login.html", {"request": request, "error": "Invalid credentials"}
     )
 
 
 @app.get("/users/")
-def read_users():
-    return {"users": users}
+def get_users():
+    return {"users": read_users()}
 
 
 @app.post("/users/", status_code=201)
-def create_user(user: User):
-    for existing_user in users:
-        if existing_user.id == user.id:
-            raise HTTPException(status_code=400, detail="ID already exists")
-        if existing_user.email == user.email:
-            raise HTTPException(status_code=400, detail="Email already exists")
-    users.append(user)
-    return {"message": "User created successfully", "user": user}
+def post_user(user: User):
+    return create_user(user)
 
 
 @app.get("/users/{id}")
-def read_user(id: int):
-    for user in users:
-        if user.id == id:
-            return {"user": user}
-    raise HTTPException(status_code=404, detail="Item not found")
+def get_user(id: int):
+    return read_user(id)
 
 
 @app.put("/users/{id}")
-def update_user(id: int, user: User):
-    for index, existing_user in enumerate(users):
-        if existing_user.id == id:
-            for other_user in users:
-                if other_user.id != id:
-                    if other_user.id == user.id:
-                        raise HTTPException(status_code=400, detail="ID already exists")
-                    if other_user.email == user.email:
-                        raise HTTPException(
-                            status_code=400, detail="Email already exists"
-                        )
-            users[index] = user
-            return {"message": "User updated successfully", "user": user}
-    raise HTTPException(status_code=404, detail="Item not found")
+def put_user(id: int, user: User):
+    return update_user(id, user)
 
 
 @app.delete("/users/{id}")
-def delete_user(id: int):
-    for index, user in enumerate(users):
-        if user.id == id:
-            del users[index]
-            return {"message": "User deleted successfully"}
-    raise HTTPException(status_code=404, detail="Item not found")
+def delete_user_route(id: int):
+    return delete_user(id)
 
 
 @app.get("/requests/")
-def read_requests():
-    return {"requests": urlaub_requests}
+def get_requests():
+    return {"requests": read_requests()}
 
 
 @app.post("/requests/", status_code=201)
-def create_request(urlaub_request: UrlaubRequest):
-    urlaub_requests.append(urlaub_request)
-    return {
-        "message": "UrlaubRequest created successfully",
-        "urlaub_request": urlaub_request,
-    }
+def post_request(urlaub_request: UrlaubRequest):
+    return create_request(urlaub_request)
 
 
 @app.get("/requests/{id}")
-def read_request(id: int):
-    for urlaub_request in urlaub_requests:
-        if urlaub_request.id == id:
-            return {"urlaub_request": urlaub_request}
-    raise HTTPException(status_code=404, detail="Item not found")
+def get_request(id: int):
+    return read_request(id)
 
 
 @app.put("/requests/{id}")
-def update_request(id: int, urlaub_request: UrlaubRequest):
-    for index, existing_urlaub_request in enumerate(urlaub_requests):
-        if existing_urlaub_request.id == id:
-            urlaub_requests[index] = urlaub_request
-            return {
-                "message": "UrlaubRequest updated successfully",
-                "urlaub_request": urlaub_request,
-            }
-    raise HTTPException(status_code=404, detail="Item not found")
+def put_request(id: int, urlaub_request: UrlaubRequest):
+    return update_request(id, urlaub_request)
 
 
 @app.delete("/requests/{id}")
-def delete_request(id: int):
-    for index, urlaub_request in enumerate(urlaub_requests):
-        if urlaub_request.id == id:
-            del urlaub_requests[index]
-            return {"message": "UrlaubRequest deleted successfully"}
-    raise HTTPException(status_code=404, detail="Item not found")
+def delete_request_route(id: int):
+    return delete_request(id)
