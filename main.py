@@ -1,14 +1,23 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Form
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+templates = Jinja2Templates(directory="templates")
+
 class User(BaseModel):
     id: int
-    name: str
-    email: str
+    name: str = "name"
+    email: str = "email@email.com"
+    password: str = "password"
+    role: str = "employee"
+    admin: bool = False
 
-class Request(BaseModel):
+class UrlaubRequest(BaseModel):
     id: int
     user_id: int
     status: str
@@ -18,11 +27,32 @@ class Request(BaseModel):
 
 users: User = []
 
-requests: Request = []
+urlaub_requests: UrlaubRequest = []
 
 @app.get("/")
-def read_root():
-    return {"main": "main"}
+def read_root(request: Request, id: int = None):
+    user = None
+    if id is not None:
+        for u in users:
+            if u.id == id:
+                user = u
+                break
+    if not user:
+        return RedirectResponse(url="/login")
+    return templates.TemplateResponse("index.html", {"request": request, "user": user})
+
+@app.get("/login")
+def login_form(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request, "error": None})
+
+@app.post("/login")
+def login(request: Request, email: str = Form(...), password: str = Form(...)):
+    for user in users:
+        if user.email == email and user.password == password:
+            response = RedirectResponse(url=f"/?id={user.id}", status_code=302)
+            return response
+    return templates.TemplateResponse("login.html", {"request": request, "error": "Invalid credentials"})
+
 
 @app.get("/users/")
 def read_users():
@@ -58,33 +88,33 @@ def delete_user(id: int):
 
 @app.get("/requests/")
 def read_requests():
-    return {"requests": requests}
+    return {"requests": urlaub_requests}
 
 @app.post("/requests/", status_code=201)
-def create_request(request: Request):
-    requests.append(request)
-    return {"message": "Request created successfully", "request": request}
+def create_request(urlaub_request: UrlaubRequest):
+    urlaub_requests.append(urlaub_request)
+    return {"message": "UrlaubRequest created successfully", "urlaub_request": urlaub_request}
 
 @app.get("/requests/{id}")
 def read_request(id: int):
-    for request in requests:
-        if request.id == id:
-            return {"request": request}
+    for urlaub_request in urlaub_requests:
+        if urlaub_request.id == id:
+            return {"urlaub_request": urlaub_request}
     raise HTTPException(status_code=404, detail="Item not found")
 
 @app.put("/requests/{id}")
-def update_request(id: int, request: Request):
-    for index, existing_request in enumerate(requests):
-        if existing_request.id == id:
-            requests[index] = request
-            return {"message": "Request updated successfully", "request": request}
+def update_request(id: int, urlaub_request: UrlaubRequest):
+    for index, existing_urlaub_request in enumerate(urlaub_requests):
+        if existing_urlaub_request.id == id:
+            urlaub_requests[index] = urlaub_request
+            return {"message": "UrlaubRequest updated successfully", "urlaub_request": urlaub_request}
     raise HTTPException(status_code=404, detail="Item not found")
 
 @app.delete("/requests/{id}")
 def delete_request(id: int):
-    for index, request in enumerate(requests):
-        if request.id == id:
-            del requests[index]
-            return {"message": "Request deleted successfully"}
+    for index, urlaub_request in enumerate(urlaub_requests):
+        if urlaub_request.id == id:
+            del urlaub_requests[index]
+            return {"message": "UrlaubRequest deleted successfully"}
     raise HTTPException(status_code=404, detail="Item not found")
 
