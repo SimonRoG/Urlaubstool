@@ -1,8 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, UrlaubRequestDB 
+from settings import database_path
 
-DATABASE_URL = "sqlite:///./urlaubstool.db"
+DATABASE_URL = database_path
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(bind=engine)
 
