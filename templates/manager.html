@@ -13,8 +13,8 @@
         {% endif %}
         {{ urlaub_request.date_begin }} to {{ urlaub_request.date_end }}
         - Status: {{ urlaub_request.status }}
-        <button>&check;</button>
-        <button>&cross;</button>
+        <button onclick="approve({{ urlaub_request.id }})" type="button">&check;</button>
+        <button onclick="reject({{ urlaub_request.id }})" type="button">&cross;</button>
     </div>
     {% endfor %}
 </div>

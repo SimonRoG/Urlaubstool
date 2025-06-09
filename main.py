@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form, Body
+from fastapi import FastAPI, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -134,9 +134,20 @@ def get_request(id: int):
     return read_request(id)
 
 
-@app.put("/requests/{id}")
-def put_request(id: int, urlaub_request: UrlaubRequest):
-    return update_request(id, urlaub_request)
+@app.put("/requests/{id}/{status}")
+def put_request(id: int, status: str):
+    ureq = read_request(id)
+
+    urlaub_request = UrlaubRequest(
+        id=ureq.id,
+        user_id=ureq.user_id,
+        status=status,
+        date_begin=ureq.date_begin,
+        date_end=ureq.date_end,
+        date_created=ureq.date_created,
+    )
+    
+    update_request(id, urlaub_request)
 
 
 @app.delete("/requests/{id}")
