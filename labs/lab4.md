@@ -14,8 +14,6 @@
 
 - Логування подій авторизації (AuditService) після успішного чи неуспішного логіну (AuthService).
 
-- Надсилання подій для аналітики (AnalyticsService) після створення, оновлення, видалення заявок чи користувачів.
-
 - Синхронізація між сервісами через асинхронні події при зміні даних користувачів, заявок.
 
 - Генерація звітів або оновлення статистики на основі подій у системі.
@@ -35,7 +33,6 @@
 | ----------------------- | --------------------------------------------------------------- |
 | RabbitMQ                | Надійний брокер повідомлень, підтримує черги та Pub/Sub патерн. |
 | FastAPI                 | Легкий асинхронний фреймворк для реалізації сервісів.           |
-| Alembic                 | Для управління міграціями бази даних під час CI/CD.             |
 | MySQL/SQLite            | Спільна база даних для всіх сервісів.                           |
 | Docker                  | Контейнеризація та просте розгортання сервісів і брокера.       |
 
@@ -54,7 +51,6 @@ graph TD
         VacationService["VacationService"]
         NotificationService["NotificationService"]
         AuditService["AuditService"]
-        AnalyticsService["AnalyticsService"]
     end
 
     subgraph Brokers
@@ -69,7 +65,6 @@ graph TD
     VacationService --> MQ
     MQ --> NotificationService
     MQ --> AuditService
-    MQ --> AnalyticsService
 
     VacationService --> UserService
 ```
