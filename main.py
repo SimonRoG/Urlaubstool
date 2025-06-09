@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, Body
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -112,8 +112,21 @@ def get_requests():
 
 
 @app.post("/requests/", status_code=201)
-def post_request(urlaub_request: UrlaubRequest):
-    return create_request(urlaub_request)
+async def post_request(
+    user_id: int = Form(...),
+    date_begin: str = Form(...),
+    date_end: str = Form(...)
+):
+    urlaub_request = UrlaubRequest(
+        id=0,
+        user_id=int(user_id),
+        status="pending",
+        date_begin=date.fromisoformat(date_begin),
+        date_end=date.fromisoformat(date_end),
+        date_created=date.today(),
+    )
+    create_request(urlaub_request)
+    return RedirectResponse(url=f"/?id={user_id}", status_code=302)
 
 
 @app.get("/requests/{id}")

@@ -1,6 +1,7 @@
 <div id="vacationForm">
     <h2>Vacation</h2>
-    <form action="/submit-vacation" method="post">
+    <form action="/requests/" method="post">
+        <input type="hidden" name="user_id" value="{{ user.id }}">
         <label for="date_begin">from</label>
         <br>
         <input type="date" id="date_begin" name="date_begin" required>
