@@ -22,22 +22,20 @@
 
 - VacationService &rarr; NotificationService – надсилання повідомлень після зміни статусу заявки
 - AuthService &rarr; AuditService – логування авторизаційних подій
-- VacationService &rarr; AnalyticsService – надсилання подій для аналітики
 
 ### 2. Робота з даними.
 
 #### a. Визначити, який патерн використовується для роботи з базою даних (db per service or shared db)
 
-**DB per Service** – кожен сервіс має власну БД.
+**Shared DB**
 
-| Сервіс              | База даних       |
-| ------------------- | ---------------- |
-| AuthService         | auth_db          |
-| UserService         | users_db         |
-| VacationService     | vacations_db     |
-| NotificationService | notifications_db |
-| AnalyticsService    | analytics_db     |
-| AuditService        | audit_db         |
+| Сервіс              | Таблиця       |
+| ------------------- | ------------- |
+| AuthService         | auth          |
+| UserService         | users         |
+| VacationService     | vacations     |
+| NotificationService | notifications |
+| AuditService        | audit         |
 
 #### b. Визначити, як накачуються міграційні скрипти для бази даних.
 
@@ -66,7 +64,6 @@ graph TD
         VacationService["VacationService"]
         NotificationService["NotificationService"]
         AuditService["AuditService"]
-        AnalyticsService["AnalyticsService"]
     end
 
     subgraph Brokers
@@ -81,7 +78,6 @@ graph TD
     VacationService --> MQ
     MQ --> NotificationService
     MQ --> AuditService
-    MQ --> AnalyticsService
 
     VacationService --> UserService
 ```
@@ -92,7 +88,7 @@ graph TD
 | ------------- | -------------------------- | ------------------------------------------------------ |
 | Архітектура   | **Microservices**          | Поділ на незалежні сервіси за функціями                |
 | Взаємодія     | **API Gateway (Frontend)** | Один вхід до системи                                   |
-| База даних    | **Database per Service**   | Ізольовані бази для кожного сервісу                    |
+| База даних    | **Shared DB**              | Одна спільна база даних для всіх сервісів              |
 | Події         | **Event-driven**           | RabbitMQ для комунікації між сервісами                 |
 | Стабільність  | **Circuit Breaker**        | Захист від каскадних збоїв (через async timeout)       |
 | Безпека       | **JWT Authentication**     | Авторизація через токени                               |
