@@ -4,6 +4,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from datetime import date
+import httpx
+
 from users_db import (
     create_user,
     read_user,
@@ -72,13 +74,22 @@ def login_form(request: Request):
 
 @app.post("/login")
 def login(request: Request, email: str = Form(...), password: str = Form(...)):
-    user = read_user_by_email(email)
-    if user and user.password == password:
-        response = RedirectResponse(url=f"/?id={user.id}", status_code=302)
-        return response
-    return templates.TemplateResponse(
-        "login.html", {"request": request, "error": "Invalid credentials"}
-    )
+    url = "http://127.0.0.1:8001/login"
+    headers = {
+        "accept": "application/json",
+        "Content-Type": "application/json"
+    }
+    data = {
+        'login': email, 
+        'password': password
+        }
+    response = httpx.post(url, headers=headers, json=data).json()
+    if response.get("user_id"):
+        return RedirectResponse(url=f"/?id={response['user_id']}", status_code=302)
+    else:
+        return templates.TemplateResponse(
+            "login.html", {"request": request, "error": response.get("detail")}
+        )
 
 
 @app.get("/users/")
