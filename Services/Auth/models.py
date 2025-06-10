@@ -5,7 +5,7 @@ from datetime import date
 Base = declarative_base()
 
 class UserDB(Base):
-    __tablename__ = "usersAuth"
+    __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String)
     email = Column(String, unique=True, index=True)

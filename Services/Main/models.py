@@ -9,7 +9,7 @@ class UserDB(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String)
     email = Column(String, unique=True, index=True)
-    password = Column(String)
+    passwordHash = Column(String)
     role = Column(String, default="employee")
     admin = Column(Boolean, default=False)
 
