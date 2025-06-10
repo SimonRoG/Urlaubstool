@@ -12,7 +12,6 @@ from users_db import (
     update_user,
     delete_user,
     read_users,
-    read_user_by_email,
 )
 from vacations_db import (
     create_request,
@@ -75,14 +74,8 @@ def login_form(request: Request):
 @app.post("/login")
 def login(request: Request, email: str = Form(...), password: str = Form(...)):
     url = "http://127.0.0.1:8001/login"
-    headers = {
-        "accept": "application/json",
-        "Content-Type": "application/json"
-    }
-    data = {
-        'login': email, 
-        'password': password
-        }
+    headers = {"accept": "application/json", "Content-Type": "application/json"}
+    data = {"login": email, "password": password}
     response = httpx.post(url, headers=headers, json=data).json()
     if response.get("user_id"):
         return RedirectResponse(url=f"/?id={response['user_id']}", status_code=302)
@@ -124,9 +117,7 @@ def get_requests():
 
 @app.post("/requests/", status_code=201)
 async def post_request(
-    user_id: int = Form(...),
-    date_begin: str = Form(...),
-    date_end: str = Form(...)
+    user_id: int = Form(...), date_begin: str = Form(...), date_end: str = Form(...)
 ):
     urlaub_request = UrlaubRequest(
         id=0,
@@ -157,7 +148,7 @@ def put_request(id: int, status: str):
         date_end=ureq.date_end,
         date_created=ureq.date_created,
     )
-    
+
     update_request(id, urlaub_request)
 
 
