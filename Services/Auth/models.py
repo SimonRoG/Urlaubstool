@@ -1,5 +1,5 @@
 from sqlalchemy.orm import declarative_base
-from sqlalchemy import Column, Integer, String, Boolean, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, Date, ForeignKey, DateTime
 from datetime import date
 
 Base = declarative_base()
@@ -10,5 +10,7 @@ class UserDB(Base):
     name = Column(String)
     email = Column(String, unique=True, index=True)
     passwordHash = Column(String)
+    refreshToken = Column(String)
+    refreshTokenExpTime = Column(DateTime)
     role = Column(String, default="employee")
     admin = Column(Boolean, default=False)
