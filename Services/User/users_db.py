@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine, Column, Integer, String, Boolean
 from sqlalchemy.orm import sessionmaker, declarative_base
 from settings import database_path
+import httpx
 
 DATABASE_URL = database_path
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
@@ -28,14 +29,22 @@ def read_users():
 
 
 def create_user(user):
-    db = SessionLocal()
     user_data = user.dict()
-    db_user = UserDB(**user_data)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    db.close()
-    return db_user
+
+    url = "http://127.0.0.1:8001/register"
+    headers = {"accept": "application/json", "Content-Type": "application/json"}
+    data = {
+        "login": user_data["email"],
+        "password": user_data["password"],
+        "name": user_data["name"],
+    }
+    response = httpx.post(url, headers=headers, json=data).json()
+
+    return (
+        {"response": response, "user": user_data}
+        if response.get("user_id")
+        else {"error": response.get("detail")}
+    )
 
 
 def read_user(id):
