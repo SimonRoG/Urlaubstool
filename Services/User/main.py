@@ -1,17 +1,11 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from users_db import (
-    create_user,
-    read_user,
-    update_user,
-    delete_user,
-    read_users
-)
+from users_db import create_user, read_user, update_user, delete_user, read_users
 
 app = FastAPI()
 
+
 class User(BaseModel):
-    id: int
     name: str = "name"
     email: str = "email@email.com"
     password: str = "password"

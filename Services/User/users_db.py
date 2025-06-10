@@ -1,19 +1,35 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from models import Base, UserDB
+from sqlalchemy import create_engine, Column, Integer, String, Boolean
+from sqlalchemy.orm import sessionmaker, declarative_base
 from settings import database_path
 
 DATABASE_URL = database_path
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(bind=engine)
 
+Base = declarative_base()
 Base.metadata.create_all(bind=engine)
+
+
+class UserDB(Base):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    name = Column(String)
+    email = Column(String, unique=True, index=True)
+    passwordHash = Column(String)
+    role = Column(String, default="employee")
+    admin = Column(Boolean, default=False)
+
+
+def read_users():
+    db = SessionLocal()
+    users = db.query(UserDB).all()
+    db.close()
+    return users
 
 
 def create_user(user):
     db = SessionLocal()
     user_data = user.dict()
-    user_data.pop("id", None)
     db_user = UserDB(**user_data)
     db.add(db_user)
     db.commit()
@@ -49,10 +65,3 @@ def delete_user(id):
         db.commit()
     db.close()
     return db_user
-
-
-def read_users():
-    db = SessionLocal()
-    users = db.query(UserDB).all()
-    db.close()
-    return users
