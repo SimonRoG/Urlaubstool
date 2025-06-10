@@ -1,0 +1,1 @@
+database_path = "sqlite:///../../urlaubstool.db"
