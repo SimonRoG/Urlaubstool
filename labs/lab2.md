@@ -145,4 +145,4 @@ graph TD
 
 ### 4. Дизайн API у вигляді Open API
 
-![OpenApi!](/static/Pics/API.png)
+![OpenApi!](./Pics/API.png)
