@@ -1,3 +1,5 @@
 /__pycache__
 /Services/Main/__pycache__
 /Services/Auth/__pycache__
+/Services/User/__pycache__
+/Services/Vacation/__pycache__
