@@ -1,12 +1,15 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse, HTMLResponse
 from datetime import datetime, timedelta
 from pydantic import BaseModel
+from fastapi.templating import Jinja2Templates
 import database
 import hash
 import tokens
 from models import UserDB
 
 app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
 class RegisterData(BaseModel):
     login : str
@@ -19,6 +22,10 @@ class LoginData(BaseModel):
 
 class RefreshData(BaseModel):
     refreshToken : str
+
+@app.get('/', response_class=HTMLResponse)
+def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
 
 @app.post('/register')
 def register(data : RegisterData):
@@ -37,7 +44,9 @@ def register(data : RegisterData):
     db.refresh(new_user)
     db.close()
     
-    return {"access": access_token, "refresh_token": refresh_token,"user_id": new_user.id}
+    response = JSONResponse(content={"user_id": new_user.id, "access_token": access_token})
+    response.set_cookie("refresh_token", refresh_token, httponly=True, secure=False, samesite="Lax")
+    return response
 
 @app.post('/login')
 def login(data: LoginData):
@@ -52,27 +61,26 @@ def login(data: LoginData):
     refresh_token = tokens.create_refresh_token()
     database.update_user_refreshToken(user.id, refresh_token)
 
-    return {
-        "access": access_token,
-        "refresh_token": refresh_token,
-        "user_id": user.id
-    }
+    response = JSONResponse(content={"user_id": user.id, "access_token": access_token})
+    response.set_cookie("refresh_token", refresh_token, httponly=True, secure=False, samesite="Lax")
+    return response
 
 @app.post('/refresh')
 def refresh(data : RefreshData):
-    refresh_token = tokens.create_refresh_token()
     user = database.get_user_by_refresh_token(data.refreshToken)
     if not user:
         raise HTTPException(status_code=400, detail="wrong refresh token")
     
+    if user.refreshTokenExpTime < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="expired refresh token")
+    
+    refresh_token = tokens.create_refresh_token()
     refresh_responce = database.update_user_refreshToken(user.id, refresh_token)
     if not refresh_responce:
         raise HTTPException(status_code=400, detail="cant update refresh token")
     
     access_token = tokens.create_access_token(data={"id": user.id})
 
-    return {
-        "access": access_token,
-        "refresh_token": refresh_token,
-        "user_id": user.id
-    }
+    response = JSONResponse(content={"user_id": user.id, "access_token": access_token})
+    response.set_cookie("refresh_token", refresh_token, httponly=True, secure=False, samesite="Lax")
+    return response
