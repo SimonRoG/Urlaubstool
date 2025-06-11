@@ -70,3 +70,39 @@ graph TD
 ```
 
 ### 5. Event-driven system PoC чи Stream processing PoC.
+Створення події publish_user_registered:
+
+    def publish_user_registered(user_id, email):
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        channel = connection.channel()
+        channel.queue_declare(queue='user_registered')
+
+        event = {
+            'user_id': user_id,
+            'email': email
+        }
+
+        channel.basic_publish(
+            exchange='',
+            routing_key='user_registered',
+            body=json.dumps(event)
+        )
+
+        connection.close()
+
+Підписка з іншого сервісу:
+
+    def callback(ch, method, properties, body):
+        event = json.loads(body)
+
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        channel = connection.channel()
+        channel.queue_declare(queue='user_registered')
+
+        channel.basic_consume(
+            queue='user_registered',
+            on_message_callback=callback,
+            auto_ack=True
+        )
+    
+    channel.start_consuming()
