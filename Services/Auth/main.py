@@ -15,6 +15,8 @@ class RegisterData(BaseModel):
     login : str
     password : str
     name : str
+    manager : bool
+    admin: bool
 
 class LoginData(BaseModel):
     login : str
@@ -38,7 +40,7 @@ def register(data : RegisterData):
     db = database.SessionLocal()
     access_token = tokens.create_access_token(data={"id": database.get_last_user_id() + 1})
     refresh_token = tokens.create_refresh_token()
-    new_user = UserDB(email=data.login, passwordHash=hashed_pw, name=data.name, refreshToken=refresh_token, refreshTokenExpTime=datetime.utcnow() + timedelta(days=7))
+    new_user = UserDB(email=data.login, passwordHash=hashed_pw, name=data.name, refreshToken=refresh_token, refreshTokenExpTime=datetime.utcnow() + timedelta(days=7), admin=data.admin, manager=data.manager)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

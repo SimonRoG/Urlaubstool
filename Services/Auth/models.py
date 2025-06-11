@@ -12,5 +12,5 @@ class UserDB(Base):
     passwordHash = Column(String)
     refreshToken = Column(String)
     refreshTokenExpTime = Column(DateTime)
-    role = Column(String, default="employee")
+    manager = Column(Boolean, default=False)
     admin = Column(Boolean, default=False)

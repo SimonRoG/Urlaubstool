@@ -1,19 +1,89 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+  <meta charset="UTF-8">
+  <title>Login / Register</title>
 </head>
 <body>
-    <h2>Login</h2>
-    <form method="post" action="/login">
-        <label>Email:</label>
-        <input type="email" name="email" required><br>
-        <label>Password:</label>
-        <input type="password" name="password" required><br>
-        <button type="submit">Login</button>
-    </form>
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
+  <h2>Login</h2>
+  <form id="login-form">
+    <label>Login (email):</label>
+    <input type="email" name="login" required><br>
+    <label>Password:</label>
+    <input type="password" name="password" required><br>
+    <button type="submit">Login</button>
+  </form>
+
+  <hr>
+
+  <h2>Register</h2>
+  <form id="register-form">
+    <label>Login (email):</label>
+    <input type="email" name="login" required><br>
+    <label>Name:</label>
+    <input type="text" name="name" required><br>
+    <label>Password:</label>
+    <input type="password" name="password" required><br>
+    <label>Manager:</label>
+    <input type="checkbox" name="manager"><br>
+    <label>Admin:</label>
+    <input type="checkbox" name="admin"><br>
+    <button type="submit">Register</button>
+  </form>
+
+  <div id="message" style="color:red;"></div>
+
+  <script>
+    const loginForm = document.getElementById("login-form");
+    const registerForm = document.getElementById("register-form");
+    const message = document.getElementById("message");
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        login: loginForm.login.value,
+        password: loginForm.password.value
+      };
+
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const json = await res.json();
+      if (res.ok) {
+        console.log("Access token:", json.access_token);
+        message.textContent = "Login successful!";
+      } else {
+        message.textContent = json.detail || "Login failed.";
+      }
+    });
+
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        login: registerForm.login.value,
+        password: registerForm.password.value,
+        name: registerForm.name.value,
+        manager: registerForm.manager.checked,
+        admin: registerForm.admin.checked
+      };
+
+      const res = await fetch("/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const json = await res.json();
+      if (res.ok) {
+        console.log("Access token:", json.access_token);
+        message.textContent = "Registration successful!";
+      } else {
+        message.textContent = json.detail || "Registration failed.";
+      }
+    });
+  </script>
 </body>
 </html>
