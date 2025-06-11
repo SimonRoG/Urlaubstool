@@ -1,5 +1,5 @@
-from sqlalchemy import create_engine, Column, Integer, String, Boolean
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from settings import database_path
 from models import Base, UserDB
 import httpx
