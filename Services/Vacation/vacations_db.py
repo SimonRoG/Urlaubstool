@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base, UrlaubRequestDB 
+from models import Base, UrlaubRequestDB
 from settings import database_path
 
 DATABASE_URL = database_path
@@ -8,6 +8,18 @@ engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(bind=engine)
 
 Base.metadata.create_all(bind=engine)
+
+
+def read_requests(user_id=None):
+    db = SessionLocal()
+    if user_id:
+        reqs = (
+            db.query(UrlaubRequestDB).filter(UrlaubRequestDB.user_id == user_id).all()
+        )
+    else:
+        reqs = db.query(UrlaubRequestDB).all()
+    db.close()
+    return reqs
 
 
 def create_request(urlaub_request):
@@ -49,15 +61,3 @@ def delete_request(id):
         db.commit()
     db.close()
     return db_req
-
-
-def read_requests(user_id=None):
-    db = SessionLocal()
-    if user_id:
-        reqs = (
-            db.query(UrlaubRequestDB).filter(UrlaubRequestDB.user_id == user_id).all()
-        )
-    else:
-        reqs = db.query(UrlaubRequestDB).all()
-    db.close()
-    return reqs
