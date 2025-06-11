@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 SECRET_KEY = "fjkdghkhdhfjewkhuiyt7855yewuhr3oiy4f78j46hr7238okcyrewo8703R32"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
